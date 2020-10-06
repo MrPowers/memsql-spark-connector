@@ -1,0 +1,69 @@
+FROM vm/ubuntu:18.04
+
+# install curl, python and mysql-client
+RUN sudo apt update && \
+    sudo apt install -y curl python-pip mysql-client-core-5.7
+
+# install sbt
+RUN curl -L -o /tmp/sbt-1.3.5.deb https://dl.bintray.com/sbt/debian/sbt-1.3.5.deb && \
+    sudo dpkg -i /tmp/sbt-1.3.5.deb &&                                               \
+    sudo rm /tmp/sbt-1.3.5.deb &&                                                    \
+    sudo apt-get update &&                                                           \
+    sudo apt-get install -y sbt
+
+# install the latest version of Docker
+RUN apt-get update &&                                                                               \
+    apt-get install apt-transport-https ca-certificates curl software-properties-common &&          \
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - &&                      \
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable" && \
+    apt-get update &&                                                                               \
+    apt install docker-ce
+
+# install java
+RUN apt-get update && \
+    sudo apt-get install openjdk-8-jre
+
+# set environment variables
+ENV MEMSQL_PORT=5506
+ENV MEMSQL_USER=root
+ENV MEMSQL_DB=test
+ENV JAVA_HOME=/usr/lib/jvm/jdk1.8.0
+ENV CONTINUOUS_INTEGRATION=true
+ENV SBT_OPTS=-Xmx256M
+SECRET ENV LICENSE_KEY
+
+# increase the memory
+# there’s a limit to an additional 4G of memory added at once
+MEMORY 4G
+MEMORY 4G
+
+# split to 9 states
+# each of them will run different version of the memsql and spark
+SPLIT 9
+
+RUN if [ $SPLIT=='0' ] || [ $SPLIT=='1' ] || [ $SPLIT=='2' ];                             \
+    then                                                                                  \
+        export MEMSQL_IMAGE=memsql/cluster-in-a-box:centos-7.0.15-619d118712-1.9.5-1.5.0; \
+    elif [ $SPLIT=='3' ] || [ $SPLIT=='4' ] || [ $SPLIT=='5' ];                           \
+    then                                                                                  \
+        export MEMSQL_IMAGE=memsql/cluster-in-a-box:centos-6.8.15-029542cbf3-1.9.3-1.4.1; \
+    else                                                                                  \
+        export MEMSQL_IMAGE=memsql/cluster-in-a-box:6.7.18-db1caffe94-1.6.1-1.1.1;        \
+    fi
+
+# copy the entire git repository
+COPY . .
+
+# start memsql cluster
+RUN ./scripts/ensure-test-memsql-cluster.sh
+
+# run tests
+RUN if [ $SPLIT=='0' ] || [ $SPLIT=='3' ] || [ $SPLIT=='6' ];             \
+    then                                                                  \
+        sbt ++2.11.11 "testOnly -- -l  OnlySpark3" -Dspark.version=2.3.4; \
+    elif [ $SPLIT=='1' ] || [ $SPLIT=='4' ] || [ $SPLIT=='7' ];           \
+    then                                                                  \
+        sbt ++2.11.11 "testOnly -- -l  OnlySpark3" -Dspark.version=2.4.4; \
+    else                                                                  \
+        sbt ++2.12.12 test -Dspark.version=3.0.0;                         \
+    fi
