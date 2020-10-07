@@ -26,6 +26,7 @@ class OutputMetricsTest extends IntegrationSuiteBase {
       .format("memsql")
       .save("metricsInts")
 
+    Thread.sleep(100)
     assert(outputWritten == numRows)
     outputWritten = 0
 
@@ -38,6 +39,7 @@ class OutputMetricsTest extends IntegrationSuiteBase {
       .format("memsql")
       .save("metricsStrings")
 
+    Thread.sleep(100)
     assert(outputWritten == 3)
   }
 }
