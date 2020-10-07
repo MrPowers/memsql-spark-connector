@@ -37,12 +37,5 @@ SECRET ENV LICENSE_KEY
 MEMORY 4G
 MEMORY 4G
 
-# split to 9 states
-# each of them will run different version of the memsql and spark
-SPLIT 9
-
 # copy the entire git repository
 COPY . .
-
-# export MEMSQL_IMAGE and SPARK_VERSION
-RUN ./scripts/execute-tests.sh $SPLIT
