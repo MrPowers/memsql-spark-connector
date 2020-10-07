@@ -1,6 +1,6 @@
 FROM vm/ubuntu:18.04
 
-WAIT /layerci/tests/Layerfile
+WAIT /layerci/Layerfile
 
 BUTTON do you want to publish?
 BUTTON do you really want to publish?
