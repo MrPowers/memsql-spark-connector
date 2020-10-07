@@ -1,4 +1,4 @@
-FROM /layerci
+FROM /layerci/Layerfile
 
 # split to 9 states
 # each of them will run different version of the memsql and spark
