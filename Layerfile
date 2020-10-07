@@ -37,6 +37,7 @@ SECRET ENV LICENSE_KEY
 MEMORY 4G
 MEMORY 4G
 MEMORY 4G
+MEMORY 4G
 
 # copy the entire git repository
 
