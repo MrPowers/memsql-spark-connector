@@ -1,4 +1,4 @@
-FROM /layerci/Layerfile
+FROM vm/ubuntu:18.04
 
 WAIT /layerci/tests/Layerfile
 
