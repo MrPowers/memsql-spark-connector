@@ -39,13 +39,15 @@ MEMORY 4G
 MEMORY 4G
 
 # copy the entire git repository
-COPY . .
 
 # split to 9 states
 # each of them will run different version of the memsql and spark
 SPLIT 9
 
-RUN echo testing
+COPY . .
 
-# export MEMSQL_IMAGE and SPARK_VERSION
-# RUN ./scripts/execute-tests.sh $SPLIT
+# start memsql cluster
+RUN ./scripts/ensure-test-memsql-cluster.sh
+
+# run tests
+RUN ./scripts/execute-tests.sh

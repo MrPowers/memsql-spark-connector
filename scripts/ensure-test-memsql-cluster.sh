@@ -5,6 +5,18 @@ set -eu
 cd "$(git rev-parse --show-toplevel)"
 
 DEFAULT_IMAGE_NAME="memsql/cluster-in-a-box:centos-7.0.15-619d118712-1.9.5-1.5.0"
+TEST_NUM=${SPLIT:-"0"}
+
+if [ "$TEST_NUM" == '0' ] || [ "$TEST_NUM" == '1' ] || [ "$TEST_NUM" == '2' ]
+then
+  DEFAULT_IMAGE_NAME="memsql/cluster-in-a-box:centos-7.0.15-619d118712-1.9.5-1.5.0"
+elif [ "$TEST_NUM" == '3' ] || [ "$TEST_NUM" == '4' ] || [ "$TEST_NUM" == '5' ]
+then
+  DEFAULT_IMAGE_NAME="memsql/cluster-in-a-box:centos-6.8.15-029542cbf3-1.9.3-1.4.1"
+else
+  DEFAULT_IMAGE_NAME="memsql/cluster-in-a-box:6.7.18-db1caffe94-1.6.1-1.1.1"
+fi
+
 IMAGE_NAME="${MEMSQL_IMAGE:-$DEFAULT_IMAGE_NAME}"
 CONTAINER_NAME="memsql-integration"
 
