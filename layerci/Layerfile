@@ -36,6 +36,7 @@ SECRET ENV LICENSE_KEY
 # there’s a limit to an additional 4G of memory added at once
 MEMORY 4G
 MEMORY 4G
+MEMORY 4G
 
 # copy the entire git repository
 COPY . .

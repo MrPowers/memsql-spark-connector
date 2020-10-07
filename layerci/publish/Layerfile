@@ -1,4 +1,4 @@
-FROM /layerci
+FROM vm/ubuntu:18.04
 
 WAIT ../tests
 
