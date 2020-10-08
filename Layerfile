@@ -29,7 +29,8 @@ ENV MEMSQL_USER=root
 ENV MEMSQL_DB=test
 ENV JAVA_HOME=/usr/lib/jvm/jdk1.8.0
 ENV CONTINUOUS_INTEGRATION=true
-ENV SBT_OPTS=-Xmx4G
+ENV SBT_OPTS=-Xmx2g
+ENV SBT_OPTS=-Xms2g
 SECRET ENV LICENSE_KEY
 
 # increase the memory
@@ -49,12 +50,4 @@ COPY . .
 RUN ./scripts/ensure-test-memsql-cluster.sh
 
 # run tests
-RUN if [ $SPLIT=='0' ] || [ $SPLIT=='3' ] || [ $SPLIT=='6' ];             \
-    then                                                                  \
-        sbt ++2.11.11 "testOnly -- -l  OnlySpark3" -Dspark.version=2.3.4; \
-    elif [ $SPLIT=='1' ] || [ $SPLIT=='4' ] || [ $SPLIT=='7' ];           \
-    then                                                                  \
-        sbt ++2.11.11 "testOnly -- -l  OnlySpark3" -Dspark.version=2.4.4; \
-    else                                                                  \
-        sbt ++2.12.12 test -Dspark.version=3.0.0;                         \
-    fi
+RUN ./scripts/execute-tests.sh
